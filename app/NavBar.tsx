@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { AiOutlineBug } from "react-icons/ai";
-//import classNames from "classnames";
+import { useSession, signOut, signIn } from "next-auth/react";
 
 const Navbar = () => {
   const links = [
@@ -13,6 +13,8 @@ const Navbar = () => {
   ];
 
   const pathname = usePathname();
+
+  const session = useSession();
 
   return (
     <nav className="flex space-x-6 p-5 mb-5 border-b justify-between items-center">
@@ -34,6 +36,16 @@ const Navbar = () => {
           </Link>
         ))}
       </ul>
+      {session?.status === "loading" && <div>Loading...</div>}
+      {session?.status === "unauthenticated" && (
+        <button onClick={() => signIn()}>Sign In</button>
+      )}
+      {session?.status === "authenticated" && (
+        <>
+          <div>{session?.data?.user?.name}</div>
+          <button onClick={() => signOut()}>Sign Out</button>
+        </>
+      )}
     </nav>
   );
 };
